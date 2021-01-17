@@ -49,23 +49,16 @@ def train(ini_file):
                                   config['train']['lr_decay_rate'])
         # train step
         model.train()
+        # e is event
         for X, y, e in train_loader:
             # makes predictions
-            risk_pred = model(X)
-            train_loss = criterion(risk_pred, y, e, model)
-            train_c = c_index(-risk_pred, y, e)
-            # updates parameters
-            optimizer.zero_grad()
-            train_loss.backward()
-            optimizer.step()
+            train_loss, train_c = train_iteration(model, X, criterion, y, e, optimizer)
         # valid step
         model.eval()
         for X, y, e in test_loader:
             # makes predictions
             with torch.no_grad():
-                risk_pred = model(X)
-                valid_loss = criterion(risk_pred, y, e, model)
-                valid_c = c_index(-risk_pred, y, e)
+                valid_c, valid_loss = validation_iteration(model, X, criterion, y, e)
                 if best_c_index < valid_c:
                     best_c_index = valid_c
                     flag = 0
@@ -82,6 +75,20 @@ def train(ini_file):
         print('\rEpoch: {}\tLoss: {:.8f}({:.8f})\tc-index: {:.8f}({:.8f})\tlr: {:g}'.format(
             epoch, train_loss.item(), valid_loss.item(), train_c, valid_c, lr), end='', flush=False)
     return best_c_index
+
+def validation_iteration(model, X, criterion, y, e):
+    risk_pred = model(X)
+    valid_loss = criterion(risk_pred, y, e, model)
+    valid_c = c_index(-risk_pred, y, e)
+    return valid_c, valid_loss
+
+def train_iteration(model, X, criterion, y, e, optimizer):
+    train_c, train_loss = newmethod960(model, X, criterion, y, e)
+    # updates parameters
+    optimizer.zero_grad()
+    train_loss.backward()
+    optimizer.step()
+    return train_loss, train_c
 
 if __name__ == '__main__':
     # global settings
