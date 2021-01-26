@@ -1,6 +1,7 @@
 # ------------------------------------------------------------------------------
 # --coding='utf-8'--
-# Written by czifan (czifan@pku.edu.cn)
+# Source code written by czifan (czifan@pku.edu.cn)
+# extensions written by Carlos Hernandez (carlos.hernandez.p@upc.edu)
 # ------------------------------------------------------------------------------
 from __future__ import absolute_import
 from __future__ import division
